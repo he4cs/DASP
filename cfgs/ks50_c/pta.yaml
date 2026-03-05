@@ -1,0 +1,68 @@
+MODEL:
+  ADAPTATION: pta
+  ARCH: cav-mae-ft
+  CKPT_PATH: ckpt/cav-mae-ft-ks50.pth
+
+TEST:
+  BATCH_SIZE: 64
+
+CORRUPTION:
+  DATASET: ks50
+  NUM_EX: -1
+  SEVERITY:
+    - 5
+  DOMAIN_SEQUENCE:
+    # S1: interleaved modality corruptions
+    - {'video': 'gaussian_noise'}
+    - {'video': 'shot_noise'}
+    - {'audio': 'gaussian_noise'}
+    - {'video': 'impulse_noise'}
+    - {'video': 'defocus_blur'}
+    - {'audio': 'traffic'}
+    - {'video': 'glass_blur'}
+    - {'video': 'motion_blur'}
+    - {'audio': 'crowd'}
+    - {'video': 'zoom_blur'}
+    - {'video': 'snow'}
+    - {'video': 'frost'}
+    - {'audio': 'rain'}
+    - {'video': 'fog'}
+    - {'video': 'brightness'}
+    - {'audio': 'thunder'}
+    - {'video': 'contrast'}
+    - {'video': 'elastic_transform'}
+    - {'audio': 'wind'}
+    - {'video': 'pixelate'}
+    - {'video': 'jpeg_compression'}
+
+    # S2: video corruptions
+    # - {'video': 'gaussian_noise'}
+    # - {'video': 'shot_noise'}
+    # - {'video': 'impulse_noise'}
+    # - {'video': 'defocus_blur'}
+    # - {'video': 'glass_blur'}
+    # - {'video': 'motion_blur'}
+    # - {'video': 'zoom_blur'}
+    # - {'video': 'snow'}
+    # - {'video': 'frost'}
+    # - {'video': 'fog'}
+    # - {'video': 'brightness'}
+    # - {'video': 'contrast'}
+    # - {'video': 'elastic_transform'}
+    # - {'video': 'pixelate'}
+    # - {'video': 'jpeg_compression'}
+
+    # S3: audio corruptions
+    # - {'audio': 'gaussian_noise'}
+    # - {'audio': 'traffic'}
+    # - {'audio': 'crowd'}
+    # - {'audio': 'rain'}
+    # - {'audio': 'thunder'}
+    # - {'audio': 'wind'}
+    
+OPTIM:
+  METHOD: Adam
+  STEPS: 1
+  BETA: 0.9
+  LR: 1e-4
+  WD: 0.
