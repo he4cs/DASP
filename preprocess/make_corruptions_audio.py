@@ -20,16 +20,16 @@ def is_audio_file(filename):
     return filename.lower().endswith(AUDIO_EXTENSIONS)
 
 # Lazy-loading cache for background noises to prevent massive I/O bottlenecks
-_WEATHER_AUDIO_CACHE = {}
+_NOISY_AUDIO_CACHE = {}
 
-def get_weather_audio(path):
-    """Loads weather audio once per process and serves from memory thereafter."""
-    global _WEATHER_AUDIO_CACHE
-    if path not in _WEATHER_AUDIO_CACHE:
+def get_noisy_audio(path):
+    """Loads noisy audio once per process and serves from memory thereafter."""
+    global _NOISY_AUDIO_CACHE
+    if path not in _NOISY_AUDIO_CACHE:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Missing external noise file: {path}")
-        _WEATHER_AUDIO_CACHE[path] = AudioSegment.from_file(path)
-    return _WEATHER_AUDIO_CACHE[path]
+        _NOISY_AUDIO_CACHE[path] = AudioSegment.from_file(path)
+    return _NOISY_AUDIO_CACHE[path]
 
 # ==========================================
 # Distortions
@@ -44,9 +44,9 @@ def apply_gaussian_noise(audio_path, output_path, severity):
 
     sf.write(output_path, audio_with_noise, sr)
 
-def apply_external_noise(audio_path, weather_path, output_path, severity):
+def apply_external_noise(audio_path, noise_path, output_path, severity):
     audio = AudioSegment.from_file(audio_path)
-    background_sound = get_weather_audio(weather_path)
+    background_sound = get_noisy_audio(noise_path)
 
     # Adjust the length to match the source audio
     if len(audio) <= len(background_sound):
@@ -66,18 +66,18 @@ def apply_external_noise(audio_path, weather_path, output_path, severity):
 # Multi-processing Orchestration
 # ==========================================
 
-def process_single_audio(audio_path, output_path, corruption, severity, weather_path):
+def process_single_audio(audio_path, output_path, corruption, severity, noise_path):
     """Worker function to process a single audio file."""
     try:
         if corruption == 'gaussian_noise':
             apply_gaussian_noise(audio_path, output_path, severity)
         else:
-            weather_file = os.path.join(weather_path, f"{corruption}.wav")
-            apply_external_noise(audio_path, weather_file, output_path, severity)
+            noise_file = os.path.join(noise_path, f"{corruption}.wav")
+            apply_external_noise(audio_path, noise_file, output_path, severity)
     except Exception as e:
         print(f"Failed to process {os.path.basename(audio_path)}: {e}")
 
-def save_distorted_data(corruption, severity, data_path, save_path, weather_path):
+def save_distorted_data(corruption, severity, data_path, save_path, noise_path):
     """Prepares tasks and dispatches them to a process pool."""
     
     # Define and create target directory upfront
@@ -101,7 +101,7 @@ def save_distorted_data(corruption, severity, data_path, save_path, weather_path
                 base_name = os.path.splitext(name)[0]
                 output_path = os.path.join(target_dir, f"{base_name}.wav")
                 
-            tasks.append((audio_path, output_path, corruption, severity, weather_path))
+            tasks.append((audio_path, output_path, corruption, severity, noise_path))
 
     if not tasks:
         print(f"No valid audio files found in {data_path}")
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     parser.add_argument('--severity', type=int, default=1, choices=[1, 2, 3, 4, 5])
     parser.add_argument('--data_path', type=str, default='data/VGGSound/audio_test')
     parser.add_argument('--save_path', type=str, default='data/VGGSound/audio_test-C')
-    parser.add_argument('--weather_path', type=str, default='preprocess/weather_audios/')
+    parser.add_argument('--noise_path', type=str, default='preprocess/noisy_audios')
     args = parser.parse_args()
 
     if args.corruption == 'all':
@@ -140,5 +140,5 @@ if __name__ == '__main__':
             severity=args.severity,
             data_path=args.data_path,
             save_path=args.save_path,
-            weather_path=args.weather_path
+            noise_path=args.noise_path
         )

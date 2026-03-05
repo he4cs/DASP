@@ -55,7 +55,7 @@ Please ensure your workspace is organized as follows:
 │       └── image_mulframe_test/
 └── preprocess/
     ├── frost_images/
-    └── weather_audios/         # Extracted from NoisyAudios.zip
+    └── noisy_audios/         # Extracted from NoisyAudios.zip
 ```
 
 #### 🛠️ Data Preprocessing
@@ -76,7 +76,7 @@ python ./preprocess/make_corruptions_audio.py \
     --severity [5/4/3/2/1] \
     --data_path 'data/Kinetics50/audio_val256_k=50' \
     --save_path 'data/Kinetics50/audio_val256_k=50-C' \
-    --weather_path 'preprocess/weather_audios'
+    --noise_path 'preprocess/noisy_audios'
 ```
 
 ### 3. Evaluation
