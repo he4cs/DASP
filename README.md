@@ -50,12 +50,12 @@ Please ensure your workspace is organized as follows:
 │   ├── Kinetics50/             # Extracted from Kinetics50.zip
 │   │   ├── audio_val256_k=50/
 │   │   └── image_mulframe_val256_k=50/
-│   └── VGGSound/               # Extracted from Kinetics50.zip
+│   └── VGGSound/               # Extracted from VGGSound.zip
 │       ├── audio_test/
 │       └── image_mulframe_test/
 └── preprocess/
     ├── frost_images/
-    └── weather_audios/         # Extracted from Kinetics50.zip
+    └── weather_audios/         # Extracted from NoisyAudios.zip
 ```
 
 #### 🛠️ Data Preprocessing
